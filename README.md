@@ -1,1 +1,1 @@
-just for beginner like ME.
+just for noobie like ME.
