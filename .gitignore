@@ -1,0 +1,14 @@
+# Ignore log files
+*.log
+
+# Ignore environment variables
+.env
+
+# environment python
+venv/*
+
+# key pair for server https
+*.pem
+
+# backup file 
+*.bak

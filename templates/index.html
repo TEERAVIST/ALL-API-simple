@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fantasy Calculator</title>
+  <style>
+    body {
+      background-color: #f0e68c;
+      /* Light yellow background */
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      /* Fun font */
+      color: #4a3c2d;
+      /* Dark brown text */
+      text-align: center;
+      padding: 20px;
+      border: 5px solid #8b5a2b;
+      /* Brown border */
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      /* Shadow effect */
+    }
+
+    h1 {
+      color: #8b0000;
+      /* Dark red for headings */
+      text-shadow: 2px 2px #ffcc00;
+      /* Golden shadow */
+    }
+
+    h2 {
+      color: #8b4513;
+      /* Saddle brown for subheadings */
+    }
+
+    input[type="number"],
+    button {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      border: 2px solid #8b5a2b;
+      /* Brown border for inputs */
+    }
+
+    button {
+      background-color: #ffcc00;
+      /* Gold button background */
+      color: #4a3c2d;
+      /* Dark text on buttons */
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      /* Smooth transition */
+    }
+
+    button:hover {
+      background-color: #ffd700;
+      /* Lighter gold on hover */
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #006400;
+      /* Dark green for results */
+    }
+
+    select {
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 2px solid #8b5a2b;
+      /* Brown border for dropdowns */
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Fantasy Calculator</h1>
+
+  <h2>REST API - Addition</h2>
+  <form id="restAddForm">
+    <input type="number" id="restAddA" placeholder="Enter a" required />
+    <input type="number" id="restAddB" placeholder="Enter b" required />
+    <button type="submit">Calculate (Addition)</button>
+  </form>
+  <div id="restAddResult" class="result"></div>
+
+  <h2>REST API - Subtraction</h2>
+  <form id="restSubtractForm">
+    <input type="number" id="restSubtractA" placeholder="Enter a" required />
+    <input type="number" id="restSubtractB" placeholder="Enter b" required />
+    <button type="submit">Calculate (Subtraction)</button>
+  </form>
+  <div id="restSubtractResult" class="result"></div>
+
+  <h2>SOAP API - Addition</h2>
+  <form id="soapAddForm">
+    <input type="number" id="soapAddA" placeholder="Enter a" required />
+    <input type="number" id="soapAddB" placeholder="Enter b" required />
+    <button type="submit">Calculate (SOAP Addition)</button>
+  </form>
+  <div id="soapAddResult" class="result"></div>
+
+  <h2>SOAP API - Subtraction</h2>
+  <form id="soapSubtractForm">
+    <input type="number" id="soapSubtractA" placeholder="Enter a" required />
+    <input type="number" id="soapSubtractB" placeholder="Enter b" required />
+    <button type="submit">Calculate (SOAP Subtraction)</button>
+  </form>
+  <div id="soapSubtractResult" class="result"></div>
+
+  <h2>GraphQL API</h2>
+  <form id="graphqlForm">
+    <input type="number" id="graphqlA" placeholder="Enter a" required />
+    <input type="number" id="graphqlB" placeholder="Enter b" required />
+    <select id="graphqlOperation">
+      <option value="add">Addition</option>
+      <option value="subtract">Subtraction</option>
+    </select>
+    <button type="submit">Calculate (GraphQL)</button>
+  </form>
+  <div id="graphqlResult" class="result"></div>
+
+  <h2>WebSocket API</h2>
+  <form id="wsForm">
+    <input type="number" id="wsA" placeholder="Enter a" required />
+    <input type="number" id="wsB" placeholder="Enter b" required />
+    <select id="wsOperation">
+      <option value="add">Addition</option>
+      <option value="subtract">Subtraction</option>
+    </select>
+    <button type="submit">Calculate (WebSocket)</button>
+  </form>
+  <div id="wsResult" class="result"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+  <script>
+    // Socket.IO setup for WebSocket communication.
+    var socket = io.connect("https://192.168.51.146:443");
+
+    // REST API - Addition form submission.
+    document.getElementById("restAddForm").onsubmit = async function (event) {
+      event.preventDefault();
+      const a = document.getElementById("restAddA").value;
+      const b = document.getElementById("restAddB").value;
+
+      const response = await fetch(`/add?a=${a}&b=${b}`);
+      const data = await response.json();
+      document.getElementById("restAddResult").innerText =
+        `Result: ${data.result || data.error}`;
+    };
+
+    // REST API - Subtraction form submission.
+    document.getElementById("restSubtractForm").onsubmit = async function (
+      event,
+    ) {
+      event.preventDefault();
+      const a = document.getElementById("restSubtractA").value;
+      const b = document.getElementById("restSubtractB").value;
+
+      const response = await fetch(`/subtract?a=${a}&b=${b}`);
+      const data = await response.json();
+      document.getElementById("restSubtractResult").innerText =
+        `Result: ${data.result || data.error}`;
+    };
+
+    // SOAP API - Addition form submission.
+    document.getElementById("soapAddForm").onsubmit = async function (event) {
+      event.preventDefault();
+      const a = document.getElementById("soapAddA").value;
+      const b = document.getElementById("soapAddB").value;
+
+      const response = await fetch("/soap/add", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({a: parseInt(a), b: parseInt(b)}),
+      });
+
+      const data = await response.json();
+      document.getElementById("soapAddResult").innerText =
+        `Result: ${data.result || data.error}`;
+    };
+
+    // SOAP API - Subtraction form submission.
+    document.getElementById("soapSubtractForm").onsubmit = async function (
+      event,
+    ) {
+      event.preventDefault();
+      const a = document.getElementById("soapSubtractA").value;
+      const b = document.getElementById("soapSubtractB").value;
+
+      const response = await fetch("/soap/subtract", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({a: parseInt(a), b: parseInt(b)}),
+      });
+
+      const data = await response.json();
+      document.getElementById("soapSubtractResult").innerText =
+        `Result: ${data.result || data.error}`;
+    };
+
+    // GraphQL API form submission.
+    document.getElementById("graphqlForm").onsubmit = async function (event) {
+      event.preventDefault();
+      const operation = document.getElementById("graphqlOperation").value;
+      const a = document.getElementById("graphqlA").value;
+      const b = document.getElementById("graphqlB").value;
+
+      const query =
+        operation === "add"
+          ? `query { add(a: ${a}, b: ${b}) }`
+          : `query { subtract(a: ${a}, b: ${b}) }`;
+
+      const response = await fetch("/graphql", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({query}),
+      });
+
+      const data = await response.json();
+
+      document.getElementById("graphqlResult").innerText =
+        `Result: ${operation === "add" ? data.data.add : data.data.subtract}`;
+    };
+
+    // WebSocket API form submission.
+    document.getElementById("wsForm").onsubmit = function (event) {
+      event.preventDefault();
+
+      const operation = document.getElementById("wsOperation").value;
+
+      const a = document.getElementById("wsA").value;
+      const b = document.getElementById("wsB").value;
+
+      socket.emit(operation, {a: parseInt(a), b: parseInt(b)});
+    };
+
+    socket.on("result", function (data) {
+      document.getElementById("wsResult").innerText +=
+        `Result: ${data.result}\n`;
+    });
+  </script>
+</body>
+
+</html>
